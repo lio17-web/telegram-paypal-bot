@@ -6,9 +6,10 @@ import random
 from datetime import datetime
 import os
 
-TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")  # depuis .env ou autre
+# 🔐 Token Telegram depuis Render (environment variable)
+TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
-# Chargement des utilisateurs premium
+# Chargement des utilisateurs premium depuis un fichier
 def load_users():
     try:
         with open("users.json", "r") as f:
@@ -29,15 +30,14 @@ def is_premium(user_id):
             return True
     return False
 
-# Liste des mots coréens premium (exemples)
+# ✨ Liste des mots premium
 mots_premium = [
     {"coréen": "친구", "fr": "Ami", "pron": "chingu"},
     {"coréen": "학교", "fr": "École", "pron": "hakgyo"},
     {"coréen": "음식", "fr": "Nourriture", "pron": "eumsik"},
-    # ajoute d'autres
 ]
 
-# Liste gratuite
+# 💬 Liste des mots gratuits
 mots_gratuits = [
     {"coréen": "안녕하세요", "fr": "Bonjour", "pron": "annyeonghaseyo"},
     {"coréen": "감사합니다", "fr": "Merci", "pron": "gamsahamnida"},
@@ -49,8 +49,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     nom = update.effective_user.first_name
     await update.message.reply_text(
         f"🇰🇷 Bienvenue {nom} !\n"
-        f"Tape /mot pour un mot gratuit chaque jour.\n"
-        f"✨ Pour accéder aux mots Premium, tape /premium"
+        f"Tape /mot pour apprendre un mot coréen.\n"
+        f"✨ Pour plus de contenu : /premium"
     )
 
 # /mot
@@ -80,28 +80,20 @@ async def premium(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if is_premium(user_id):
         await update.message.reply_text("✅ Tu es déjà Premium.")
     else:
+        paypal_link = f"https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=ton@email.com&amount=5.00&currency_code=EUR&item_name=Accès+Premium&custom={user_id}&notify_url=https://tonsite.com/paypal-ipn"
         await update.message.reply_text(
-            "🎁 Accès Premium : 3€/mois via PayPal\n"
-            "Clique ici pour payer : https://www.paypal.com/paypalme/TONLIEN\n\n"
-            "Après paiement, ton accès sera activé automatiquement."
+            f"🚀 Pour débloquer l’accès Premium :\n{paypal_link}\n\n"
+            f"📌 Après paiement, ton accès sera activé automatiquement."
         )
-async def premium(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_id = update.effective_user.id
-    paypal_link = f"https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=ton@email.com&amount=5.00&currency_code=EUR&item_name=Accès+Premium&custom={user_id}&notify_url=https://tonsite.com/paypal-ipn"
-    
-    await update.message.reply_text(
-        f"🚀 Pour débloquer l’offre Premium, clique ici :\n{paypal_link}"
-    )
 
-# Lancer le bot
+# 🔁 Lancer le bot
 async def main():
     app = ApplicationBuilder().token(TOKEN).build()
-
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("mot", mot))
     app.add_handler(CommandHandler("premium", premium))
 
-    print("✅ Bot Telegram en ligne")
+    print("✅ Bot Telegram en ligne...")
     await app.run_polling()
 
 if __name__ == "__main__":
