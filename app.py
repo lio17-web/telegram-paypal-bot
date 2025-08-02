@@ -7,7 +7,7 @@ from datetime import datetime
 import os
 
 # 🔐 Token Telegram depuis Render (environment variable)
-TOKEN = os.getenv("ABCDefghIJKlmnoPQRstuvWXYZ12345678")
+TOKEN = os.getenv("ABCDefghIJKlmnoPQRstuvWXYZ123456788109888456:AAF9iIw1RyfxaonHd5CunysNeIOshpaRaco")
 
 # Chargement des utilisateurs premium depuis un fichier
 def load_users():
